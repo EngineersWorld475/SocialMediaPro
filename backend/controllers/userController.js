@@ -14,6 +14,27 @@ export const signupUser = async (req, res) => {
       return res.status(400).json({ message: 'user already exists' });
     }
 
+    if (username) {
+      if (username.includes(' ')) {
+        return res
+          .status(400)
+          .json({ message: 'username can not include space' });
+      }
+      if (username !== username.toLowerCase()) {
+        return res
+          .status(400)
+          .json({ message: 'username can not be capital letters' });
+      }
+    }
+
+    if (password) {
+      if (password.length < 7 || password.length > 20) {
+        return res
+          .status(400)
+          .json({ message: 'password length should be between 7 and 20' });
+      }
+    }
+
     const salt = await bcryptjs.genSalt(10);
     const hashedPassword = bcryptjs.hashSync(password, salt);
 
@@ -96,7 +117,7 @@ export const followUnFollowUser = async (req, res) => {
     const currentUser = await User.findById(req.user._id);
 
     //checking if the user trying to follow himself/herself
-    if (id === req.user._id) {
+    if (id === req.user._id.toString()) {
       return res
         .status(400)
         .json({ message: 'You can not follow/unfollow yourself' });
@@ -123,5 +144,65 @@ export const followUnFollowUser = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: error.message });
     console.log(`Error in follow/unfollow user ${error.message}`);
+  }
+};
+
+export const updateUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, email, password, profilePic, username, bio } = req.body;
+    const userId = req.user._id;
+
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).send({ message: 'User not found' });
+    }
+
+    if (id !== userId.toString()) {
+      return res
+        .status(400)
+        .json({ message: `You can not update other users's profile` });
+    }
+
+    if (username) {
+      if (username.includes(' ')) {
+        return res
+          .status(400)
+          .json({ message: 'username can not include space' });
+      }
+      if (username !== username.toLowerCase()) {
+        return res
+          .status(400)
+          .json({ message: 'username can not be capital letters' });
+      }
+    }
+    let hashedPassword;
+    if (password) {
+      if (password.length < 7 || password.length > 20) {
+        return res
+          .status(400)
+          .json({ message: 'password length should be between 7 and 20' });
+      }
+      const salt = await bcryptjs.genSalt(10);
+      hashedPassword = bcryptjs.hashSync(password, salt);
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      id,
+      {
+        $set: {
+          name,
+          email,
+          password: hashedPassword || user.password,
+          profilePic,
+          username,
+          bio,
+        },
+      },
+      { new: true }
+    );
+    res.status(200).json({ message: 'User updated successfully', updatedUser });
+  } catch (error) {
+    res.status(500).send({ message: `Error in update user: ${error.message}` });
   }
 };
