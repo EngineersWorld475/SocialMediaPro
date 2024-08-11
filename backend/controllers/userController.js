@@ -206,3 +206,21 @@ export const updateUser = async (req, res) => {
     res.status(500).send({ message: `Error in update user: ${error.message}` });
   }
 };
+
+export const getUserProfile = async (req, res) => {
+  try {
+    const { username } = req.params;
+    const user = await User.findOne({ username })
+      .select('-password')
+      .select('-updatedAt');
+    if (!user) {
+      return res.status(400).json({ message: 'User not found' });
+    }
+    res.status(200).json(user);
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(500)
+      .json({ message: `Error in getting user profile: ${error.message}` });
+  }
+};
