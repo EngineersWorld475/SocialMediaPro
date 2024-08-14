@@ -1,6 +1,7 @@
 import User from '../models/userModel.js';
 import bcryptjs from 'bcryptjs';
 import generateTokenAndSetCookie from '../utils/helper/generateTokenSetCookie.js';
+import { v2 as cloudinary } from 'cloudinary';
 
 // Register user
 export const signupUser = async (req, res) => {
@@ -89,6 +90,8 @@ export const loginUser = async (req, res) => {
       name: user.name,
       email: user.email,
       username: user.username,
+      bio: user.bio,
+      profilePic: user.profilePic,
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -151,7 +154,8 @@ export const followUnFollowUser = async (req, res) => {
 export const updateUser = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, email, password, profilePic, username, bio } = req.body;
+    const { name, email, password, username, bio } = req.body;
+    let { profilePic } = req.body;
     const userId = req.user._id;
 
     const user = await User.findById(id);
@@ -177,6 +181,17 @@ export const updateUser = async (req, res) => {
           .json({ error: 'username can not be capital letters' });
       }
     }
+
+    if (profilePic) {
+      if (user.profilePic) {
+        await cloudinary.uploader.destroy(
+          user.profilePic.split('/').pop().split('.')[0]
+        ); // if the profile picture already exists it deletes the current one and upload the new profile picture, instead of keeping the older one.
+      }
+      const uploadResponse = await cloudinary.uploader.upload(profilePic);
+      profilePic = uploadResponse.secure_url;
+    }
+
     let hashedPassword;
     if (password) {
       if (password.length < 7 || password.length > 20) {
@@ -194,7 +209,6 @@ export const updateUser = async (req, res) => {
         $set: {
           name,
           email,
-          password: hashedPassword || user.password,
           profilePic,
           username,
           bio,
@@ -202,7 +216,11 @@ export const updateUser = async (req, res) => {
       },
       { new: true }
     );
-    res.status(200).json({ message: 'User updated successfully', updatedUser });
+
+    // password should be null in response
+    user.password = null;
+
+    res.status(200).json(updatedUser);
   } catch (error) {
     res.status(500).send({ error: `Error in update user: ${error.message}` });
   }
