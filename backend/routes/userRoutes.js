@@ -4,6 +4,7 @@ import {
   getUserProfile,
   loginUser,
   logoutUser,
+  searchUsers,
   signupUser,
   updateUser,
 } from '../controllers/userController.js';
@@ -16,5 +17,6 @@ router.post('/logout', logoutUser);
 router.post('/follow/:id', protectRoute, followUnFollowUser);
 router.put('/update/:id', protectRoute, updateUser);
 router.get('/profile/:username', getUserProfile);
+router.get('/search-user/:keyword', searchUsers);
 
 export default router;

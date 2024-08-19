@@ -244,3 +244,19 @@ export const getUserProfile = async (req, res) => {
       .json({ error: `Error in getting user profile: ${error.message}` });
   }
 };
+
+// search for users
+export const searchUsers = async (req, res) => {
+  try {
+    const { keyword } = req.params;
+    const result = await User.find({
+      $or: [
+        { name: { $regex: keyword, $options: 'i' } },
+        { username: { $regex: keyword, $options: 'i' } },
+      ],
+    });
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(500).json({ error: `Error in searching` });
+  }
+};

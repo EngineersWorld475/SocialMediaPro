@@ -10,6 +10,7 @@ import userAtom from './atoms/userAtom';
 import { useRecoilValue } from 'recoil';
 import LogoutButton from './components/LogoutButton';
 import UpdateProfilePage from './pages/UpdateProfilePage';
+import SearchPage from './pages/SearchPage';
 
 const App = () => {
   const user = useRecoilValue(userAtom);
@@ -34,6 +35,7 @@ const App = () => {
           path="/update-profile"
           element={user ? <UpdateProfilePage /> : <Navigate to="/auth" />}
         />
+        <Route path="/searched-users" element={<SearchPage />} />
       </Routes>
       {user && <LogoutButton />}
     </Container>
