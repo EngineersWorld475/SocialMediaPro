@@ -19,6 +19,7 @@ import useShowToast from '../hooks/useShowToast';
 
 const UpdateProfilePage = () => {
   const [user, setUser] = useRecoilState(userAtom);
+  const [loading, setLoading] = useState(false);
   const toast = useShowToast();
   const [formData, setFormData] = useState({
     name: user.name,
@@ -32,6 +33,7 @@ const UpdateProfilePage = () => {
   const fileRef = useRef(null);
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const res = await fetch(`/api/users/update/${user._id}`, {
         method: 'PUT',
@@ -41,9 +43,11 @@ const UpdateProfilePage = () => {
       const data = await res.json();
       console.log(data);
       if (data.error) {
+        setLoading(false);
         toast('Error', data.error, 'error');
         return;
       }
+      setLoading(false);
       toast('Success', 'Profile updated successfully', 'success');
       setUser(data);
       localStorage.setItem('user-threads', JSON.stringify(data));
@@ -149,17 +153,7 @@ const UpdateProfilePage = () => {
           </FormControl>
           <Stack spacing={6} direction={['column', 'row']}>
             <Button
-              bg={'red.400'}
-              color={'white'}
-              w="full"
-              _hover={{
-                bg: 'red.500',
-              }}
-            >
-              Cancel
-            </Button>
-            <Button
-              bg={'blue.400'}
+              bg={'green.700'}
               color={'white'}
               w="full"
               _hover={{
@@ -167,7 +161,7 @@ const UpdateProfilePage = () => {
               }}
               type="submit"
             >
-              Submit
+              {loading ? 'loading...' : 'Submit'}
             </Button>
           </Stack>
         </Stack>
