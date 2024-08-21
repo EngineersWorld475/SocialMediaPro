@@ -7,23 +7,23 @@ export const signupUser = async (req, res) => {
   try {
     const { name, username, password, email } = req.body;
     if (!name || !username || !password || !email) {
-      return res.status(400).json({ message: 'All fields are required' });
+      return res.status(400).json({ error: 'All fields are required' });
     }
     const user = await User.findOne({ $or: [{ email }, { username }] });
     if (user) {
-      return res.status(400).json({ message: 'user already exists' });
+      return res.status(400).json({ error: 'user already exists' });
     }
 
     if (username) {
       if (username.includes(' ')) {
         return res
           .status(400)
-          .json({ message: 'username can not include space' });
+          .json({ error: 'username can not include space' });
       }
       if (username !== username.toLowerCase()) {
         return res
           .status(400)
-          .json({ message: 'username can not be capital letters' });
+          .json({ error: 'username can not be capital letters' });
       }
     }
 
@@ -31,7 +31,7 @@ export const signupUser = async (req, res) => {
       if (password.length < 7 || password.length > 20) {
         return res
           .status(400)
-          .json({ message: 'password length should be between 7 and 20' });
+          .json({ error: 'password length should be between 7 and 20' });
       }
     }
 
@@ -53,11 +53,11 @@ export const signupUser = async (req, res) => {
         username: newUser.username,
       });
     } else {
-      return res.status(400).send({ message: 'Invalid user data' });
+      return res.status(400).send({ error: 'Invalid user data' });
     }
   } catch (error) {
     res.status(500).send({
-      message: error.message,
+      error: error.message,
     });
     console.log('Error in signup user', err.message);
   }
@@ -69,17 +69,17 @@ export const loginUser = async (req, res) => {
     const { username, password } = req.body;
 
     if ((!username, !password)) {
-      return res.status(400).json({ message: 'All fields are required' });
+      return res.status(400).json({ error: 'All fields are required' });
     }
     const user = await User.findOne({ username });
 
     if (!user) {
-      return res.status(400).json({ message: 'Invalid credentials' });
+      return res.status(400).json({ error: 'Invalid credentials' });
     }
     const isPasswordCorrect = await bcryptjs.compare(password, user.password);
 
     if (!isPasswordCorrect) {
-      return res.status(400).json({ message: 'Invalid credentials' });
+      return res.status(400).json({ error: 'Invalid credentials' });
     }
 
     generateTokenAndSetCookie(user._id, res);
@@ -91,7 +91,7 @@ export const loginUser = async (req, res) => {
       username: user.username,
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ error: error.message });
     console.log(`Error in login user ${error.message}`);
   }
 };
@@ -104,7 +104,7 @@ export const logoutUser = (req, res) => {
       .status(200)
       .json({ message: 'User has been signed out successfully' });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ error: error.message });
     console.log(`Error in login user ${error.message}`);
   }
 };
@@ -120,10 +120,10 @@ export const followUnFollowUser = async (req, res) => {
     if (id === req.user._id.toString()) {
       return res
         .status(400)
-        .json({ message: 'You can not follow/unfollow yourself' });
+        .json({ error: 'You can not follow/unfollow yourself' });
     }
     if (!currentUser || !userToModify) {
-      return res.status(400).json({ message: 'User not found' });
+      return res.status(400).json({ error: 'User not found' });
     }
 
     // checking if the current user is already following the other user
@@ -142,7 +142,7 @@ export const followUnFollowUser = async (req, res) => {
       return res.status(200).json({ message: 'User followed successfully' });
     }
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ error: error.message });
     console.log(`Error in follow/unfollow user ${error.message}`);
   }
 };
@@ -156,25 +156,25 @@ export const updateUser = async (req, res) => {
 
     const user = await User.findById(id);
     if (!user) {
-      return res.status(404).send({ message: 'User not found' });
+      return res.status(404).send({ error: 'User not found' });
     }
 
     if (id !== userId.toString()) {
       return res
         .status(400)
-        .json({ message: `You can not update other users's profile` });
+        .json({ error: `You can not update other users's profile` });
     }
 
     if (username) {
       if (username.includes(' ')) {
         return res
           .status(400)
-          .json({ message: 'username can not include space' });
+          .json({ error: 'username can not include space' });
       }
       if (username !== username.toLowerCase()) {
         return res
           .status(400)
-          .json({ message: 'username can not be capital letters' });
+          .json({ error: 'username can not be capital letters' });
       }
     }
     let hashedPassword;
@@ -182,7 +182,7 @@ export const updateUser = async (req, res) => {
       if (password.length < 7 || password.length > 20) {
         return res
           .status(400)
-          .json({ message: 'password length should be between 7 and 20' });
+          .json({ error: 'password length should be between 7 and 20' });
       }
       const salt = await bcryptjs.genSalt(10);
       hashedPassword = bcryptjs.hashSync(password, salt);
@@ -204,7 +204,7 @@ export const updateUser = async (req, res) => {
     );
     res.status(200).json({ message: 'User updated successfully', updatedUser });
   } catch (error) {
-    res.status(500).send({ message: `Error in update user: ${error.message}` });
+    res.status(500).send({ error: `Error in update user: ${error.message}` });
   }
 };
 
@@ -216,13 +216,13 @@ export const getUserProfile = async (req, res) => {
       .select('-password')
       .select('-updatedAt');
     if (!user) {
-      return res.status(400).json({ message: 'User not found' });
+      return res.status(400).json({ error: 'User not found' });
     }
     res.status(200).json(user);
   } catch (error) {
     console.log(error);
     return res
       .status(500)
-      .json({ message: `Error in getting user profile: ${error.message}` });
+      .json({ error: `Error in getting user profile: ${error.message}` });
   }
 };
