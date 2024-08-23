@@ -52,6 +52,7 @@ const UpdateProfilePage = () => {
       setUser(data);
       localStorage.setItem('user-threads', JSON.stringify(data));
     } catch (error) {
+      setLoading(false);
       toast('Error', error.message, 'error');
     }
   };

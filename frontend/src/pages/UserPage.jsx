@@ -1,14 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import UserHeader from '../components/UserHeader';
 import UserPost from '../components/UserPost';
-import { useRecoilState } from 'recoil';
-import userAtom from '../atoms/userAtom';
 import { useParams } from 'react-router-dom';
 import useShowToast from '../hooks/useShowToast';
 
 const UserPage = () => {
   const [userProfile, setUserProfile] = useState({});
-  const [user, setUser] = useRecoilState(userAtom);
   const toast = useShowToast();
   const { username } = useParams();
   const fetchUserProfile = async () => {

@@ -1,6 +1,7 @@
 import {
   Avatar,
   Box,
+  Button,
   Flex,
   Link,
   Menu,
@@ -10,19 +11,60 @@ import {
   Portal,
   Text,
   VStack,
-  useToast,
 } from '@chakra-ui/react';
-import React from 'react';
+import { Link as RouterLink } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
 import { BsInstagram } from 'react-icons/bs';
+import { useRecoilValue } from 'recoil';
+import userAtom from '../atoms/userAtom';
 import { CgMoreO } from 'react-icons/cg';
+import useShowToast from '../hooks/useShowToast';
+
 const UserHeader = ({ user }) => {
-  const toast = useToast();
+  const currentUser = useRecoilValue(userAtom);
+  const toast = useShowToast();
+
+  const [following, setFollowing] = useState(false);
+  const [updating, setUpdating] = useState(false);
+
+  const handleFollowOrUnfollow = async () => {
+    setUpdating(true);
+    try {
+      const res = await fetch(`/api/users/follow/${user._id}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      const data = await res.json();
+      if (res.ok) {
+        if (following) {
+          user.followers.pop(); // simulate removing from followers
+        } else {
+          user.followers.push(currentUser._id); // simulates adding to followers
+        }
+        setFollowing(!following);
+      } else {
+        toast('Error', data.error, 'error');
+      }
+    } catch (error) {
+      toast('Error', error, 'error');
+    } finally {
+      setUpdating(false);
+    }
+  };
+
   const copyUrl = () => {
     const currentURL = window.location.href;
     navigator.clipboard.writeText(currentURL).then(() => {
       toast({ description: 'Copied' });
     });
   };
+
+  useEffect(() => {
+    if (user && currentUser) {
+      setFollowing(user.followers && user.followers.includes(currentUser._id));
+    }
+  }, [user, currentUser]);
+  console.log(following);
 
   return (
     <VStack gap={4} alignItems={'start'}>
@@ -56,6 +98,21 @@ const UserHeader = ({ user }) => {
         </Box>
       </Flex>
       <Text>{user.bio}</Text>
+      {currentUser._id === user._id && (
+        <Link as={RouterLink} to="/update-profile">
+          <Button size={'sm'}>Update profile</Button>
+        </Link>
+      )}
+      {currentUser._id !== user._id && (
+        <Button
+          bg={'blue.600'}
+          size={'sm'}
+          onClick={handleFollowOrUnfollow}
+          isLoading={updating}
+        >
+          {following ? 'Unfollow' : 'Follow'}
+        </Button>
+      )}
       <Flex w={'full'} justifyContent={'space-between'}>
         <Flex gap={2} alignItems={'center'}>
           <Text color={'gray.light'}>
