@@ -137,6 +137,7 @@ const UserPage = () => {
             profilePic={p.postedBy.profilePic}
             username={p.postedBy.username}
             postId={p._id}
+            post={p}
           />
         ))
       ) : (

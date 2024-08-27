@@ -6,10 +6,10 @@ import {
   Flex,
   Image,
   Text,
+  Textarea,
 } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 import { BsAlexa, BsThreeDots } from 'react-icons/bs';
-import Actions from '../components/Actions';
 import Comment from '../components/Comment';
 import { useParams } from 'react-router-dom';
 import useShowToast from '../hooks/useShowToast';
@@ -18,6 +18,7 @@ const PostPage = () => {
   const [liked, setLiked] = useState(false);
   const [user, setUser] = useState([]);
   const [post, setPost] = useState([]);
+  const [reply, setReply] = useState('');
   const toast = useShowToast();
   const params = useParams();
   const fetchUser = async () => {
@@ -45,6 +46,30 @@ const PostPage = () => {
       toast('Error', error, 'error');
     }
   };
+
+  const submitReply = async () => {
+    try {
+      const res = await fetch(`/api/posts/reply/${params.pid}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: reply }),
+      });
+      const data = await res.json();
+      if (data.error) {
+        toast('Error', data.error, 'error');
+      }
+      setPost((prevPost) => ({
+        ...prevPost,
+        replies: [
+          ...prevPost.replies,
+          data?.post?.replies[data?.post?.replies?.length - 1],
+        ],
+      }));
+      setReply('');
+    } catch (error) {
+      toast('Error', error, 'error');
+    }
+  };
   useEffect(() => {
     fetchUser();
   }, [params.username]);
@@ -52,7 +77,6 @@ const PostPage = () => {
   useEffect(() => {
     fetchPost();
   }, [params.pid]);
-
   return (
     <>
       <Flex>
@@ -93,6 +117,19 @@ const PostPage = () => {
           {post && post.likes && post.likes.length + (liked ? 1 : 0)} likes
         </Text>
       </Flex>
+      <Flex direction={'column'} position={'relative'}>
+        <Textarea
+          placeholder="Write a comment..."
+          onChange={(e) => setReply(e.target.value)}
+          value={reply}
+          mt={2}
+        />
+        <Flex direction={'row'} justify={'flex-end'} marginTop={'4px'}>
+          <Button size={'xs'} marginLeft={'2px'} onClick={submitReply}>
+            Submit
+          </Button>
+        </Flex>
+      </Flex>
       <Divider my={4} />
       <Flex justifyContent={'space-between'}>
         <Flex gap={2} alignItems={'center'}>
@@ -115,7 +152,10 @@ const PostPage = () => {
               createdAt={'2d'}
               likes={100}
               username={reply.username}
+              userId={reply.userId}
               userAvatar={reply.userProfilePic}
+              commentId={reply._id}
+              setPost={setPost}
             />
           );
         })}

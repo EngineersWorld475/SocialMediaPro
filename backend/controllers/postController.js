@@ -162,3 +162,44 @@ export const getFeedPosts = async (req, res) => {
       .json({ error: `Error in getting feed posts ${error.message}` });
   }
 };
+
+export const deleteReply = async (req, res) => {
+  try {
+    const { pid, cid, uid } = req.query;
+
+    if (uid !== req.user._id.toString()) {
+      return res
+        .status(401)
+        .json({ error: 'Sorry...you are not allowed to delete this comment' });
+    }
+    let currentPost = await Post.findById(pid);
+    if (!currentPost) {
+      return res.status(404).json({ error: 'Post not found' });
+    }
+
+    const replyToRemove = currentPost.replies.find((reply) => reply._id == cid);
+
+    if (!replyToRemove) {
+      return res.status(404).json({ error: 'Reply not found' });
+    }
+
+    const updatedReply = currentPost.replies.filter(
+      (reply) => reply._id.toString() !== cid.toString()
+    );
+
+    const updatedPost = await Post.findByIdAndUpdate(
+      pid,
+      {
+        $set: {
+          replies: updatedReply,
+        },
+      },
+      { new: true }
+    );
+    res.status(200).json(updatedPost);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: `Error in deleting reply ${error.message}` });
+  }
+};
