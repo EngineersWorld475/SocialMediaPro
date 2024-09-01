@@ -50,15 +50,17 @@ export const createPost = async (req, res) => {
 // get post
 export const getPost = async (req, res) => {
   try {
-    const { id } = req.params;
-    const post = await Post.findById(id);
-    if (!post) {
-      return res.status(404).json({ error: 'Posts not found' });
+    const { postId } = req.query;
+    const { userId } = req.query;
+    if (postId) {
+      const post = await Post.findById(postId);
+      return res.status(200).json(post);
     }
-
-    res.status(200).json({ message: 'Post found', post });
+    if (userId) {
+      const post = await Post.find({ postedBy: userId }).populate('postedBy');
+      return res.status(200).json(post);
+    }
   } catch (error) {
-    console.log(error.messge);
     res.status(500).json({ error: `Error in get post: ${error.message}` });
   }
 };
@@ -146,10 +148,13 @@ export const getFeedPosts = async (req, res) => {
       return res.status(404).json({ error: 'User not found' });
     }
     const following = user.following;
-    const feedPosts = await Post.find({ postedBy: { $in: following } }).sort({
-      createdAt: -1,
-    });
-    res.status(200).json({ feedPosts });
+    following.push(userId);
+    const feedPosts = await Post.find({ postedBy: { $in: following } })
+      .populate('postedBy')
+      .sort({
+        createdAt: -1,
+      });
+    res.status(200).json(feedPosts);
   } catch (error) {
     console.log(error.message);
     res
