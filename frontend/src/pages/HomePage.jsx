@@ -1,6 +1,5 @@
-import { Button, Flex } from '@chakra-ui/react';
+import { Flex } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 import useShowToast from '../hooks/useShowToast';
 import Posts from '../components/Posts';
 
@@ -26,10 +25,10 @@ const HomePage = () => {
   return (
     <Flex w={'full'} justifyContent={'center'} p={6}>
       <Flex direction={'column'}>
-        {feedPosts.length > 0 ? (
-          feedPosts.map((p) => {
+        {feedPosts?.length > 0 ? (
+          feedPosts?.map((p) => {
             return (
-              <div key={p._id}>
+              <div key={p?._id}>
                 <Posts
                   likes={p && p.likes && p.likes.length}
                   replies={p && p.replies && p.replies.length}
@@ -38,6 +37,7 @@ const HomePage = () => {
                   profilePic={p.postedBy.profilePic}
                   username={p.postedBy.username}
                   postId={p._id}
+                  post={p}
                 />
               </div>
             );

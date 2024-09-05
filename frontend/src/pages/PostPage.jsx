@@ -83,11 +83,8 @@ const PostPage = () => {
       >
         <Image src={post.img} w={'full'} />
       </Box>
-      <Flex gap={3} my={3}>
-        <Actions liked={liked} setLiked={setLiked} />
-      </Flex>
 
-      <Flex gap={2} alignItems={'center'}>
+      <Flex gap={2} alignItems={'center'} mt={3}>
         <Text color={'gray.light'} fontSize={'sm'}>
           {post && post.replies && post.replies.length} replies
         </Text>
