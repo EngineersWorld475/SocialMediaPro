@@ -147,6 +147,7 @@ export const followUnFollowUser = async (req, res) => {
   }
 };
 
+// update user profile
 export const updateUser = async (req, res) => {
   try {
     const { id } = req.params;
@@ -207,6 +208,7 @@ export const updateUser = async (req, res) => {
   }
 };
 
+// get user profile
 export const getUserProfile = async (req, res) => {
   try {
     const { username } = req.params;
