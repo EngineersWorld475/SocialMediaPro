@@ -1,7 +1,8 @@
-Social Media Application
+Social Media Application:
+
 A social media application built on the MERN stack (MongoDB, Express.js, React.js, Node.js) that allows users to connect, share, and engage with each other's content.
 
-Table of Contents
+Table of Contents:
 Features
 Technologies
 Installation
