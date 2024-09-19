@@ -129,13 +129,14 @@ const UserPage = () => {
       {posts.length > 0 ? (
         posts.map((p) => (
           <Posts
-            key={p._id} // Assuming each post has a unique _id
-            likes={1504}
-            replies={481}
+            key={p._id}
+            likes={p && p.likes && p.likes.length}
+            replies={p && p.replies && p.replies.length}
             postImg={p.img}
             postTitle={p.text}
             profilePic={p.postedBy.profilePic}
             username={p.postedBy.username}
+            postId={p._id}
           />
         ))
       ) : (

@@ -24,30 +24,29 @@ const HomePage = () => {
     fetchFeedPosts();
   }, []);
   return (
-    <Link to="/markzuckerberg">
-      <Flex w={'full'} justifyContent={'center'} p={6}>
-        <Flex direction={'column'}>
-          {feedPosts.length > 0 ? (
-            feedPosts.map((p) => {
-              return (
-                <div key={p._id}>
-                  <Posts
-                    likes={1504}
-                    replies={481}
-                    postImg={p.img}
-                    postTitle={p.text}
-                    profilePic={p.postedBy.profilePic}
-                    username={p.postedBy.username}
-                  />
-                </div>
-              );
-            })
-          ) : (
-            <h1>please follow some users for feed posts...</h1>
-          )}
-        </Flex>
+    <Flex w={'full'} justifyContent={'center'} p={6}>
+      <Flex direction={'column'}>
+        {feedPosts.length > 0 ? (
+          feedPosts.map((p) => {
+            return (
+              <div key={p._id}>
+                <Posts
+                  likes={p && p.likes && p.likes.length}
+                  replies={p && p.replies && p.replies.length}
+                  postImg={p.img}
+                  postTitle={p.text}
+                  profilePic={p.postedBy.profilePic}
+                  username={p.postedBy.username}
+                  postId={p._id}
+                />
+              </div>
+            );
+          })
+        ) : (
+          <h1>please follow some users for feed posts...</h1>
+        )}
       </Flex>
-    </Link>
+    </Flex>
   );
 };
 

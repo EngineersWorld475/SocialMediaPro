@@ -6,6 +6,7 @@ import Actions from './Actions';
 
 const Posts = ({
   postImg,
+  postId,
   postTitle,
   likes,
   replies,
@@ -15,7 +16,7 @@ const Posts = ({
   const [liked, setLiked] = useState(false);
 
   return (
-    <Link to="/markzuckerberg/post/1">
+    <Link to={`/${username}/post/${postId}`}>
       <Flex gap={3} mb={4} py={5}>
         <Flex flexDirection={'column'} alignItems={'center'}>
           <Avatar size={'sm'} name={'markzuckerberg'} src={profilePic} />
@@ -80,7 +81,7 @@ const Posts = ({
             </Box>
           )}
           <Flex gap={3} my={1}>
-            <Actions liked={liked} setLiked={setLiked} />
+            <Actions liked={liked} setLiked={setLiked} postId={postId} />
           </Flex>
           <Flex gap={2} alignItems={'center'}>
             <Text color={'gray.light'} fontSize={'sm'}>
