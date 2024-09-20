@@ -116,8 +116,6 @@ export const replyToPost = async (req, res) => {
   try {
     const postId = req.params.id;
     const userId = req.user._id;
-    const username = req.user.username;
-    const userProfilePic = req.user.profilePic;
     const { text } = req.body;
 
     if (!text) {
@@ -129,7 +127,7 @@ export const replyToPost = async (req, res) => {
       return res.status(404).json({ error: 'Post not found' });
     }
 
-    const reply = { userId, username, userProfilePic, text };
+    const reply = { userId, text };
     post.replies.push(reply);
     await post.save();
     return res.status(200).json({ message: 'Reply added successfully', post });

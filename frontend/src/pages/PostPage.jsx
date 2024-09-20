@@ -145,19 +145,7 @@ const PostPage = () => {
       {post &&
         post.replies &&
         post.replies.map((reply) => {
-          return (
-            <Comment
-              key={reply._id}
-              comment={reply.text}
-              createdAt={'2d'}
-              likes={100}
-              username={reply.username}
-              userId={reply.userId}
-              userAvatar={reply.userProfilePic}
-              commentId={reply._id}
-              setPost={setPost}
-            />
-          );
+          return <Comment key={reply._id} reply={reply} setPost={setPost} />;
         })}
     </>
   );

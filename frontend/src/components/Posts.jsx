@@ -4,12 +4,16 @@ import { BsThreeDots } from 'react-icons/bs';
 import { Link } from 'react-router-dom';
 import Actions from './Actions';
 
-const Posts = ({ postImg, postId, postTitle, profilePic, username, post }) => {
+const Posts = ({ post }) => {
   return (
-    <Link to={`/${username}/post/${postId}`}>
+    <Link to={`/${post?.postedBy?.username}/post/${post?._id}`}>
       <Flex gap={3} mb={4} py={5}>
         <Flex flexDirection={'column'} alignItems={'center'}>
-          <Avatar size={'sm'} name={username} src={profilePic} />
+          <Avatar
+            size={'sm'}
+            name={post?.postedBy?.username}
+            src={post?.postedBy?.profilePic}
+          />
           <Box w={'1px'} h={'full'} bg={'gray.light'} my={2}></Box>
           <Box position={'relative'} w={'full'}>
             {post && post.replies && post.replies.length > 0 && (
@@ -39,7 +43,7 @@ const Posts = ({ postImg, postId, postTitle, profilePic, username, post }) => {
             {/* left side */}
             <Flex w={'full'} alignItems={'center'}>
               <Text fontSize={'sm'} fontWeight={'bold'}>
-                {username}
+                {post?.postedBy?.username}
               </Text>
               <Image src={'/verified.png'} w={4} ml={1} />
             </Flex>
@@ -52,15 +56,15 @@ const Posts = ({ postImg, postId, postTitle, profilePic, username, post }) => {
             </Flex>
           </Flex>
 
-          <Text fontSize={'sm'}>{postTitle}</Text>
-          {postImg && (
+          <Text fontSize={'sm'}>{post?.text}</Text>
+          {post?.img && (
             <Box
               borderRadius={6}
               overflow={'hidden'}
               border={'1px solid'}
               borderColor={'gray.light'}
             >
-              <Image src={postImg} w={'full'} />
+              <Image src={post?.img} w={'full'} />
             </Box>
           )}
           <Flex gap={3} my={1}>

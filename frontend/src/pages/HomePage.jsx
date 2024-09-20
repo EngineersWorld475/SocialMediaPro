@@ -6,42 +6,39 @@ import Posts from '../components/Posts';
 const HomePage = () => {
   const toast = useShowToast();
   const [feedPosts, setFeedPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
   const fetchFeedPosts = async () => {
     try {
       const res = await fetch(`/api/posts/feed-posts`);
       const data = await res.json();
       if (data.error) {
         toast('Error', data.error, 'error');
+      } else {
+        setFeedPosts(data);
       }
-      setFeedPosts(data);
     } catch (error) {
       toast('Error', error, 'error');
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     fetchFeedPosts();
   }, []);
+
   return (
     <Flex w={'full'} justifyContent={'center'} p={6}>
       <Flex direction={'column'}>
-        {feedPosts?.length > 0 ? (
-          feedPosts?.map((p) => {
-            return (
-              <div key={p?._id}>
-                <Posts
-                  likes={p && p.likes && p.likes.length}
-                  replies={p && p.replies && p.replies.length}
-                  postImg={p.img}
-                  postTitle={p.text}
-                  profilePic={p.postedBy.profilePic}
-                  username={p.postedBy.username}
-                  postId={p._id}
-                  post={p}
-                />
-              </div>
-            );
-          })
+        {loading ? (
+          <h1>Loading...</h1>
+        ) : feedPosts.length > 0 ? (
+          feedPosts.map((p) => (
+            <div key={p?._id}>
+              <Posts post={p} />
+            </div>
+          ))
         ) : (
           <h1>please follow some users for feed posts...</h1>
         )}

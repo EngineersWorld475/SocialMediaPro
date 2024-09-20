@@ -245,6 +245,19 @@ export const getUserProfile = async (req, res) => {
   }
 };
 
+// get user by id
+export const getUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const user = await User.findById(id);
+    return res.status(200).json(user);
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ error: `Error in getting user: ${error.message}` });
+  }
+};
+
 // search for users
 export const searchUsers = async (req, res) => {
   try {
