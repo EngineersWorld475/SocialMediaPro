@@ -1,30 +1,35 @@
 import Post from '../models/postModel.js';
 import User from '../models/userModel.js';
+import { v2 as cloudinary } from 'cloudinary';
 
 // create post
 export const createPost = async (req, res) => {
   try {
-    const { postedBy, text, img } = req.body;
+    const { postedBy, text } = req.body;
+    let { img } = req.body;
     if (!postedBy || !text) {
-      return res
-        .status(400)
-        .json({ message: 'PostedBy and text are required' });
+      return res.status(400).json({ error: 'PostedBy and text are required' });
     }
     const user = await User.findById(postedBy);
 
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ error: 'User not found' });
     }
 
     if (user._id.toString() !== req.user._id.toString()) {
-      return res.status(401).json({ message: 'Unauthorized to create a post' });
+      return res.status(401).json({ error: 'Unauthorized to create a post' });
     }
 
-    const maxLength = 600;
+    const maxLength = 500;
     if (text.length > maxLength) {
       return res
         .status(400)
-        .json({ message: `Text must be less than ${maxLength} characters` });
+        .json({ error: `Text must be less than ${maxLength} characters` });
+    }
+
+    if (img) {
+      const uploadResponse = await cloudinary.uploader.upload(img);
+      img = uploadResponse.secure_url;
     }
 
     const newPost = new Post({
@@ -38,7 +43,7 @@ export const createPost = async (req, res) => {
     console.log(error.message);
     return res
       .status(500)
-      .json({ message: `Error in create post: ${error.message}` });
+      .json({ error: `Error in create post: ${error.message}` });
   }
 };
 
@@ -48,13 +53,13 @@ export const getPost = async (req, res) => {
     const { id } = req.params;
     const post = await Post.findById(id);
     if (!post) {
-      return res.status(404).json({ message: 'Posts not found' });
+      return res.status(404).json({ error: 'Posts not found' });
     }
 
     res.status(200).json({ message: 'Post found', post });
   } catch (error) {
     console.log(error.messge);
-    res.status(500).json({ message: `Error in get post: ${error.message}` });
+    res.status(500).json({ error: `Error in get post: ${error.message}` });
   }
 };
 
@@ -64,16 +69,16 @@ export const deletePost = async (req, res) => {
     const { id } = req.params;
     const post = await Post.findById(id);
     if (!post) {
-      return res.status(404).json({ message: 'Post not found' });
+      return res.status(404).json({ error: 'Post not found' });
     }
     if (post.postedBy.toString() !== req.user._id.toString()) {
-      return res.status(401).json({ message: `Unauthorized to delete post` });
+      return res.status(401).json({ error: `Unauthorized to delete post` });
     }
     await Post.findByIdAndDelete(id);
     res.status(200).json({ message: 'Post deleted successfully' });
   } catch (error) {
     console.log(error.message);
-    res.status(500).json({ message: `Error in delete post: ${error.message}` });
+    res.status(500).json({ error: `Error in delete post: ${error.message}` });
   }
 };
 
@@ -83,7 +88,7 @@ export const likeUnlikePost = async (req, res) => {
     const { id } = req.params;
     const post = await Post.findById(id);
     if (!post) {
-      return res.status(404).json({ message: 'Post not found' });
+      return res.status(404).json({ error: 'Post not found' });
     }
 
     const isLiked = post.likes.includes(req.user._id);
@@ -100,7 +105,7 @@ export const likeUnlikePost = async (req, res) => {
     }
   } catch (error) {
     console.log(error.message);
-    res.status(500).json({ message: `Error in delete post: ${error.message}` });
+    res.status(500).json({ error: `Error in delete post: ${error.message}` });
   }
 };
 
@@ -114,12 +119,12 @@ export const replyToPost = async (req, res) => {
     const { text } = req.body;
 
     if (!text) {
-      return res.status(400).json({ message: 'Text field is required' });
+      return res.status(400).json({ error: 'Text field is required' });
     }
 
     const post = await Post.findById(postId);
     if (!post) {
-      return res.status(404).json({ message: 'Post not found' });
+      return res.status(404).json({ error: 'Post not found' });
     }
 
     const reply = { userId, username, userProfilePic, text };
@@ -128,7 +133,7 @@ export const replyToPost = async (req, res) => {
     return res.status(200).json({ message: 'Reply added successfully', post });
   } catch (error) {
     console.log(error.message);
-    res.status(500).json({ message: `Error in delete post: ${error.message}` });
+    res.status(500).json({ error: `Error in delete post: ${error.message}` });
   }
 };
 
@@ -138,7 +143,7 @@ export const getFeedPosts = async (req, res) => {
     const userId = req.user._id;
     const user = await User.findById(userId);
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ error: 'User not found' });
     }
     const following = user.following;
     const feedPosts = await Post.find({ postedBy: { $in: following } }).sort({
@@ -149,6 +154,6 @@ export const getFeedPosts = async (req, res) => {
     console.log(error.message);
     res
       .status(500)
-      .json({ message: `Error in getting feed posts ${error.message}` });
+      .json({ error: `Error in getting feed posts ${error.message}` });
   }
 };
