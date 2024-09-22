@@ -1,95 +1,87 @@
-Social Media Application:
+Social Media Application
+========================
 
 A social media application built on the MERN stack (MongoDB, Express.js, React.js, Node.js) that allows users to connect, share, and engage with each other's content.
 
-Table of Contents:
+Table of Contents
+-----------------
+Features
 
-Features,
-Technologies,
-Installation,
-Usage,
-Contributing
+Technologies
 
-Features:
+Installation
 
-User Authentication: Users can log in to their accounts securely.
+Usage
 
-Profile Management: Users can update their profiles, including changing their profile pictures.
+Features
+--------
+__Key Features__
 
-Post Interactions:
+__User Authentication__: Secure login functionality
+ 
+__Profile Management__: Update profiles and profile pictures
 
-Like and unlike posts from other users.
+__Post Interactions__: Like, unlike, and comment on posts
 
-Comment on posts to engage with the community.
+__Content Creation__: Create and share posts
 
-Content Creation: Users can create and share their own posts.
+__User Search and Follow__: Search and follow/unfollow users
 
-User Search and Follow: Search for other users and follow or unfollow them to stay connected.
+__Global State Management__: Utilized Recoil for efficient state management
 
-Global State Management: Utilized Recoil for efficient state management across the application.
+__Search Functionality__: Implemented User Context API
 
+Technologies
+------------
+__Frontend__: React.js, Chakra UI
 
-Search Functionality: Implemented User Context API for a seamless search experience.
+__Backend__: Node.js, Express.js
 
-Technologies:
+__Database__: MongoDB
 
-Frontend: React.js, Chakra UI
+__Image Upload__: Cloudinary
 
-Backend: Node.js, Express.js
+__State Management__: Recoil, User Context API
 
-Database: MongoDB
+__API__: RESTful API architecture
 
-Image Upload: Cloudinary
+Installation
+------------
+1. __Clone the repository__: git clone https://github.com/username/SocialMediaPro/new/main?filename=README.md
 
-State Management: Recoil, User Context API
+2. __Navigate to the project directory__: cd social-media-app
 
-API: RESTful API architecture
+3. __Install backend dependencies__:
 
-Installation:
-Clone the repository:
-
-bash
-Copy code
-git clone https://github.com/username/SocialMediaPro/new/main?filename=README.md
-cd social-media-app
-Navigate to the backend directory and install dependencies:
-
-bash
-Copy code
 cd backend
+
 npm install
-Set up environment variables (e.g., MongoDB URI, Cloudinary credentials) in a .env file.
 
-Start the backend server:
-
-bash
-
-Copy code
+4. __Set up environment variables (e.g., MongoDB URI, Cloudinary credentials) in a .env file.__
+   
+5. __Start the backend server__:
 
 npm start
 
-Navigate to the frontend directory and install dependencies:
-
-bash
-
-Copy code
+6. __Install frontend dependencies__:
 
 cd ../frontend
 
 npm install
 
-Start the frontend application:
-
-bash
-Copy code
+8. __Start the frontend application__:
+   
 npm start
+
 Usage
-Once the application is running, you can:
+-----
 
-Register and log in to your account.
+Once the application is running:
 
-Update your profile and manage your posts.
-Like, unlike, and comment on other users' posts.
-Search for and follow/unfollow other users to enhance your social experience.
-Contributing
-Contributions are welcome! If you would like to improve the project, please open an issue or submit a pull request.
+Register and log in to your account
+
+Update your profile and manage your posts
+
+Like, unlike, and comment on other users' posts
+
+Search for and follow/unfollow other users
